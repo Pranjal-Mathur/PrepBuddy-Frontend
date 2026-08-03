@@ -1,9 +1,9 @@
-// 
-
 import axios from "axios";
 
+const BASE_URL = "https://prepbuddy-vj5y.onrender.com";
+
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
@@ -18,15 +18,11 @@ export const generateInterviewReport = async ({
   formData.append("selfDescription", selfDescription);
   formData.append("resume", resume);
 
-  const response = await api.post(
-    "/api/interview/",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const response = await api.post("/api/interview/", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return response.data;
 };
