@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { Upload, FileText, LogOut } from "lucide-react";
+import { Upload, FileText, LogOut, Loader2 } from "lucide-react";
 import { useInterview } from "../hooks/useInterview";
 import { useAuth } from "../../auth/hooks/useAuth";
 
 const Home = () => {
   const {
-    loading,
+    isGenerating,
+    reportsLoading,
     generateReport,
     reports,
     getAllReports,
@@ -27,7 +28,7 @@ const Home = () => {
   }, []);
 
   const handleGenerateReport = async () => {
-    const resumeFile = resumeInputRef.current.files[0];
+    const resumeFile = resumeInputRef.current?.files[0];
 
     if (!jobDescription.trim()) {
       alert("Please enter the Job Description.");
@@ -55,7 +56,7 @@ const Home = () => {
     }
   };
 
-  if (loading) {
+  if (isGenerating) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-black">
         <h1 className="text-3xl font-semibold text-white animate-pulse">
@@ -221,58 +222,51 @@ Your resume is processed securely and used only for generating your interview re
 
 {/* Previous Reports */}
 
-{reports?.length > 0 && (
-
-<div className="mt-20">
-
-  <h2 className="text-3xl font-bold text-white mb-8">
-    Previous Reports
-  </h2>
-
-  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-  {reports.map((report) => (
-
-<div
-  key={report._id}
-  onClick={() => navigate(`/interview/${report._id}`)}
-  className="cursor-pointer rounded-2xl bg-[#171717] border border-zinc-700 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/10"
->
-
-  <h3 className="text-xl font-semibold text-white line-clamp-2">
-
-    {report.title ||
-      report.jobRole ||
-      report.jobDescription?.split("\n")[0] ||
-      "Interview Report"}
-
-  </h3>
-
-  <p className="mt-4 text-zinc-400 text-sm">
-    Generated on{" "}
-    {new Date(report.createdAt).toLocaleDateString()}
-  </p>
-
-  <div className="mt-5 flex items-center justify-between">
-
-    <span className="text-zinc-400">
-       Match Score
-    </span>
-
-    <span className="text-emerald-400 font-bold text-lg">
-      {report.matchScore}%
-    </span>
-
+{reportsLoading ? (
+  <div className="mt-20">
+    <h2 className="text-3xl font-bold text-white mb-8">
+      Previous Reports
+    </h2>
+    <div className="flex items-center gap-3 text-zinc-400">
+      <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+      <span>Loading previous reports...</span>
+    </div>
   </div>
-
-</div>
-
-))}
-
-</div>
-
-</div>
-
-)}
+) : reports?.length > 0 ? (
+  <div className="mt-20">
+    <h2 className="text-3xl font-bold text-white mb-8">
+      Previous Reports
+    </h2>
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {reports.map((report) => (
+      <div
+        key={report._id}
+        onClick={() => navigate(`/interview/${report._id}`)}
+        className="cursor-pointer rounded-2xl bg-[#171717] border border-zinc-700 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/10"
+      >
+        <h3 className="text-xl font-semibold text-white line-clamp-2">
+          {report.title ||
+            report.jobRole ||
+            report.jobDescription?.split("\n")[0] ||
+            "Interview Report"}
+        </h3>
+        <p className="mt-4 text-zinc-400 text-sm">
+          Generated on{" "}
+          {new Date(report.createdAt).toLocaleDateString()}
+        </p>
+        <div className="mt-5 flex items-center justify-between">
+          <span className="text-zinc-400">
+             Match Score
+          </span>
+          <span className="text-emerald-400 font-bold text-lg">
+            {report.matchScore}%
+          </span>
+        </div>
+      </div>
+    ))}
+    </div>
+  </div>
+) : null}
 
 </div>
 

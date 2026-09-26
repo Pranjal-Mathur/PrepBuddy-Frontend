@@ -15,8 +15,12 @@ export const useInterview = () => {
   }
 
   const {
-    loading,
-    setLoading,
+    isGenerating,
+    setIsGenerating,
+    reportsLoading,
+    setReportsLoading,
+    reportLoading,
+    setReportLoading,
     report,
     setReport,
     reports,
@@ -28,7 +32,7 @@ export const useInterview = () => {
     selfDescription,
     resume,
   }) => {
-    setLoading(true);
+    setIsGenerating(true);
 
     try {
       const response = await generateInterviewReport({
@@ -48,12 +52,12 @@ export const useInterview = () => {
 
       return null;
     } finally {
-      setLoading(false);
+      setIsGenerating(false);
     }
   };
 
   const getReportById = async (interviewId) => {
-    setLoading(true);
+    setReportLoading(true);
 
     try {
       const response = await getInterviewReportById(interviewId);
@@ -69,33 +73,36 @@ export const useInterview = () => {
 
       return null;
     } finally {
-      setLoading(false);
+      setReportLoading(false);
     }
   };
 
   const getAllReports = async () => {
-    setLoading(true);
+    setReportsLoading(true);
 
     try {
       const response = await getAllInterviewReports();
 
       console.log("All Reports:", response);
 
-      setReports(response.interviewReports);
+      setReports(response.interviewReports || []);
 
-      return response.interviewReports;
+      return response.interviewReports || [];
     } catch (err) {
       console.error("Get All Reports Error:", err);
       console.error(err?.response?.data);
 
       return [];
     } finally {
-      setLoading(false);
+      setReportsLoading(false);
     }
   };
 
   return {
-    loading,
+    isGenerating,
+    reportsLoading,
+    reportLoading,
+    loading: isGenerating, // backwards compatibility
     report,
     reports,
     generateReport,

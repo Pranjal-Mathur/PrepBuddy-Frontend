@@ -1,10 +1,23 @@
 import axios from "axios";
 
-const BASE_URL = "https://prepbuddy-vj5y.onrender.com";
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://prepbuddy-vj5y.onrender.com");
 
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
+  timeout: 60000,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export const generateInterviewReport = async ({

@@ -9,11 +9,22 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const loadUser = async () => {
+            const token = localStorage.getItem("token");
+
+            // If no token exists, the user is unauthenticated.
+            // Avoid blocking on Render cold-start for unauthenticated visitors.
+            if (!token) {
+                setUser(null);
+                setIsLoading(false);
+                return;
+            }
+
             try {
                 const data = await getUser();
                 setUser(data.user);
             } catch (error) {
-                console.error(error);
+                console.error("Auth check failed:", error);
+                localStorage.removeItem("token");
                 setUser(null);
             } finally {
                 setIsLoading(false);

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   CheckCircle,
@@ -14,7 +14,7 @@ import { useAuth } from "../../auth/hooks/useAuth";
 
 const Interview = () => {
   const { interviewid } = useParams();
-  const { loading, report, getReportById } = useInterview();
+  const { reportLoading, report, getReportById } = useInterview();
   const { user, handleLogout } = useAuth();
 
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const Interview = () => {
     }
   }, [interviewid]);
 
-  if (loading || !report) {
+  if (reportLoading || !report) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#070707]">
         <h1 className="text-3xl font-semibold text-white animate-pulse">
